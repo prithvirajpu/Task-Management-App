@@ -7,5 +7,9 @@ class UserRepository(ABC):
         pass
 
     @abstractclassmethod
+    def create(self,email:str,name:str,password:str,is_email_verified:bool):
+        pass
+
+    @abstractclassmethod
     def save(self,user):
         pass
