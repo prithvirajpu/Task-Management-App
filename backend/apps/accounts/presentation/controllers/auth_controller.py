@@ -1,43 +1,18 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from apps.accounts.application.use_cases.send_registration_otp import (
-    SendRegistrationOTP,
-)
-from apps.accounts.infrastructure.repositories.django_user_repository import (
-    DjangoUserRepository,
-)
-from apps.accounts.infrastructure.repositories.django_otp_repository import (
-    DjangoOTPRepository,
-)
-from apps.accounts.infrastructure.services.django_email_service import (
-    DjangoEmailService,
-)
-from apps.accounts.application.use_cases.verify_registration_otp import (
-    VerifyRegistrationOTP,
-)
-from apps.accounts.infrastructure.repositories.django_registration_verification_repository import (
-    DjangoRegistrationVerificationRepository,
-)
-from apps.accounts.application.use_cases.complete_registration import (
-    CompleteRegistration,
-)
+from apps.accounts.presentation.controllers.auth_dependencies import AuthDependencies
+from apps.accounts.presentation.presenters.response import success_response,error_response
 
 class SendRegistrationOTPController(APIView):
     def post(self,request):
         email=request.data.get('email')
-        use_case=SendRegistrationOTP(user_repository=DjangoUserRepository(),
-                                     otp_repository=DjangoOTPRepository(),
-                                     email_service=DjangoEmailService())
+        use_case=AuthDependencies.send_registration_otp()
         try:
             result=use_case.execute(email)
-            return Response(result,status=status.HTTP_200_OK)
+            return success_response(message=result['message'])
         except ValueError as error:
-            return Response({
-                'error':str(error)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return error_response(message=str(error))
 
 class VerifyRegistrationOTPController(APIView):
 
@@ -46,30 +21,14 @@ class VerifyRegistrationOTPController(APIView):
         email = request.data.get("email")
         otp = request.data.get("otp")
 
-        use_case = VerifyRegistrationOTP(
-            otp_repository=DjangoOTPRepository(),
-            verification_repository=(
-                DjangoRegistrationVerificationRepository()
-            ),
-        )
-
+        use_case = AuthDependencies.verify_registration_otp()
         try:
             result = use_case.execute(
-                email=email,
-                otp=otp,
-            )
+                email=email,otp=otp)
 
-            return Response(
-                result,
-                status=status.HTTP_200_OK,
-            )
-
+            return success_response(message=result["message"],)
         except ValueError as error:
-
-            return Response(
-                {"error": str(error)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return error_response(message=str(error),)
 
 class CompleteRegistrationController(APIView):
 
@@ -78,35 +37,95 @@ class CompleteRegistrationController(APIView):
         name = request.data.get("name")
         password = request.data.get("password")
 
-        use_case = CompleteRegistration(
-            user_repository=DjangoUserRepository(),
-            verification_repository=(
-                DjangoRegistrationVerificationRepository()
-            ),
-        )
-
+        use_case = AuthDependencies.complete_registration()
         try:
             user = use_case.execute(
-                email=email,
-                name=name,
-                password=password,
+                email=email,name=name,password=password,
             )
+            return success_response(
+                message="Registration completed successfully.",
+                data={
+                    "user": {
+                        "id": user.id,
+                        "email": user.email,
+                        "name": user.name,
+                    }
+                },
+                status_code=status.HTTP_201_CREATED,
+            )
+        
+        except ValueError as error:
+            return error_response(message=str(error))
 
-            return Response(
-                {
-                    "message": "Registration completed successfully.",
+class LoginWithPasswordController(APIView):
+
+    def post(self, request):
+
+        email = request.data.get("email")
+        password = request.data.get("password")
+
+        use_case = AuthDependencies.login_with_password()
+        try:
+            result = use_case.execute(
+                email=email,password=password,
+            )
+            user = result["user"]
+
+            return success_response(
+                message="Login successful.",
+                data={
+                    "tokens": result["tokens"],
                     "user": {
                         "id": user.id,
                         "email": user.email,
                         "name": user.name,
                     },
                 },
-                status=status.HTTP_201_CREATED,
             )
 
         except ValueError as error:
+            return error_response(message=str(error))
 
-            return Response(
-                {"error": str(error)},
-                status=status.HTTP_400_BAD_REQUEST,
+class SendLoginOTPController(APIView):
+
+    def post(self, request):
+        email = request.data.get("email")
+        use_case = AuthDependencies.send_login_otp()
+        
+        try:
+            result = use_case.execute(email)
+            return success_response(
+                message=result["message"],
             )
+
+        except ValueError as error:
+            return error_response(message=str(error))
+
+class VerifyLoginOTPController(APIView):
+
+    def post(self, request):
+
+        email = request.data.get("email")
+        otp = request.data.get("otp")
+        use_case = AuthDependencies.verify_login_otp()
+
+        try:
+            result = use_case.execute(
+                email=email,otp=otp,
+            )
+            user = result["user"]
+
+            return success_response(
+                message="Login successful.",
+                data={
+                    "tokens": result["tokens"],
+                    "user": {
+                        "id": user.id,
+                        "email": user.email,
+                        "name": user.name,
+                    },
+                },
+            )
+
+        except ValueError as error:
+            return error_response(message=str(error))

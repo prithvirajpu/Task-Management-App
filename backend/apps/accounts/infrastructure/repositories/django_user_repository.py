@@ -10,6 +10,8 @@ class DjangoUserRepository(UserRepository):
             email=email,name=name,password=password,
             is_email_verified=is_email_verified
         )
+    def get_by_email(self,email:str):
+        return User.objects.filter(email=email).first()
     
     def save(self,user):
         return user.save()
