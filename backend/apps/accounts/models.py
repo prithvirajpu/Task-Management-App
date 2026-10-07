@@ -58,7 +58,6 @@ class EmailOTP(models.Model):
         LOGIN = "LOGIN", "Login"
 
     email = models.EmailField()
-
     otp = models.CharField(max_length=6)
     purpose = models.CharField(max_length=20,choices=Purpose.choices)
     expires_at = models.DateTimeField()
@@ -67,3 +66,13 @@ class EmailOTP(models.Model):
     
     def __str__(self):
         return f"{self.email} - {self.purpose}"
+
+class RegistrationVerification(models.Model):
+
+    email = models.EmailField(unique=True)
+    verified = models.BooleanField(default=False)
+    expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email
