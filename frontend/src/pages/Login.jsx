@@ -21,6 +21,7 @@ function Login() {
 
     const [otpSent, setOtpSent] = useState(false);
     const [sendingOtp, setSendingOtp] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
@@ -40,6 +41,7 @@ function Login() {
     const handlePasswordLogin = async () => {
         try {
             setError("");
+            setLoading(true);
             const response = await loginWithPassword(email, password);
             login(response.data);
             navigate("/dashboard");
@@ -48,6 +50,8 @@ function Login() {
                 error.response?.data?.message ||
                 "Login failed."
             );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -72,6 +76,7 @@ function Login() {
     const handleOTPLogin = async () => {
         try {
             setError("");
+            setLoading(true);
             const response = await verifyLoginOTP(email, otp);
             const data = response.data;
             login(data);
@@ -81,6 +86,8 @@ function Login() {
                 error.response?.data?.message ||
                 "Login failed."
             );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -139,7 +146,11 @@ function Login() {
                 <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
                     <button
                         type="button"
-                        onClick={() => setMethod("password")}
+                        onClick={() => {
+                            setMethod("password");
+                            setError("");
+                            setMessage("");
+                        }}
                         className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
                             method === "password"
                                 ? "bg-white text-slate-900 shadow-sm"
@@ -150,7 +161,11 @@ function Login() {
                     </button>
                     <button
                         type="button"
-                        onClick={() => setMethod("otp")}
+                        onClick={() => {
+                            setMethod("otp");
+                            setError("");
+                            setMessage("");
+                        }}
                         className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
                             method === "otp"
                                 ? "bg-white text-slate-900 shadow-sm"
@@ -185,9 +200,17 @@ function Login() {
 
                             <button
                                 onClick={handlePasswordLogin}
-                                className="w-full py-3 px-4 bg-[#FF5232] hover:bg-[#e04427] text-white font-medium rounded-xl transition-all shadow-sm active:scale-[0.99]"
+                                disabled={loading}
+                                className="w-full py-3 px-4 bg-[#FF5232] hover:bg-[#e04427] text-white font-medium rounded-xl transition-all shadow-sm active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
-                                Login
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        <span>Logging in...</span>
+                                    </>
+                                ) : (
+                                    "Login"
+                                )}
                             </button>
                         </div>
                     )}
@@ -202,7 +225,7 @@ function Login() {
                                 >
                                     {sendingOtp ? (
                                         <>
-                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            <Loader2 className="w-4 h-4 animate-spin" />
                                             <span>Sending OTP...</span>
                                         </>
                                     ) : (
@@ -223,9 +246,17 @@ function Login() {
 
                                     <button
                                         onClick={handleOTPLogin}
-                                        className="w-full py-3 px-4 bg-[#FF5232] hover:bg-[#e04427] text-white font-medium rounded-xl transition-all shadow-sm active:scale-[0.99]"
+                                        disabled={loading}
+                                        className="w-full py-3 px-4 bg-[#FF5232] hover:bg-[#e04427] text-white font-medium rounded-xl transition-all shadow-sm active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
-                                        Verify OTP & Login
+                                        {loading ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                <span>Verifying...</span>
+                                            </>
+                                        ) : (
+                                            "Verify OTP & Login"
+                                        )}
                                     </button>
 
                                     <button
