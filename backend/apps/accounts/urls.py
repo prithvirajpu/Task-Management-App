@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from apps.accounts.presentation.controllers.auth_controller import (
     SendRegistrationOTPController,LoginWithPasswordController,
@@ -14,4 +15,5 @@ urlpatterns = [
     path("login/",LoginWithPasswordController.as_view(),name="login",),
     path("login/send-otp/",SendLoginOTPController.as_view(),name="login-send-otp",),
     path("login/verify-otp/",VerifyLoginOTPController.as_view(),name="login-verify-otp",),
+    path("token/refresh/",TokenRefreshView.as_view(),name="token-refresh",),
 ]
