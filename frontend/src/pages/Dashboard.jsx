@@ -18,16 +18,16 @@ function Dashboard() {
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState(null);
 
     const fetchTasks = async () => {
         try {
             setError("");
 
             const response = await getTasks();
-
             setTasks(response.data);
-
         } catch (error) {
             setError(
                 error.response?.data?.message ||
@@ -47,9 +47,7 @@ function Dashboard() {
             setError("");
 
             await completeTask(taskId);
-
             await fetchTasks();
-
         } catch (error) {
             setError(
                 error.response?.data?.message ||
@@ -57,28 +55,24 @@ function Dashboard() {
             );
         }
     };
+    const promptDelete = (taskId) => {
+        setTaskToDelete(taskId);
+    };
 
-    const handleDelete = async (taskId) => {
-        const confirmed = window.confirm(
-            "Are you sure you want to delete this task?"
-        );
-
-        if (!confirmed) {
-            return;
-        }
+    const confirmDelete = async () => {
+        if (!taskToDelete) return;
 
         try {
             setError("");
-
-            await deleteTask(taskId);
-
+            await deleteTask(taskToDelete);
             await fetchTasks();
-
         } catch (error) {
             setError(
                 error.response?.data?.message ||
                 "Failed to delete task."
             );
+        } finally {
+            setTaskToDelete(null);
         }
     };
 
@@ -112,21 +106,31 @@ function Dashboard() {
             {/* Main Content Area */}
             <main className="max-w-5xl mx-auto px-4 py-8">
                 {/* Actions & Section Title */}
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-                        My Tasks
-                    </h2>
-                    <button
-                        onClick={() => {
-                            console.log("CREATE CLICKED");
-                            console.log("Authenticated:", true);
-                            navigate("/tasks/create");
-                        }}
-                        className="px-5 py-2.5 bg-[#FF5232] hover:bg-[#e04427] text-white font-medium text-sm rounded-xl transition-all shadow-sm active:scale-[0.99] flex items-center gap-2"
-                    >
-                        <span>+</span> Create Task
-                    </button>
-                </div>
+                <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+
+    <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+        My Tasks
+    </h2>
+
+    <div className="flex flex-wrap gap-3">
+
+        <button
+            onClick={() => navigate("/calendar")}
+            className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+        >
+            Calendar View
+        </button>
+
+        <button
+            onClick={() => navigate("/tasks/create")}
+            className="flex items-center gap-2 rounded-xl bg-[#FF5232] px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#e04427]"
+        >
+            <span>+</span>
+            Create Task
+        </button>
+
+    </div>
+</div>
 
                 {/* Error Banner */}
                 {error && (
@@ -223,7 +227,7 @@ function Dashboard() {
     </button>
 
     <button
-        onClick={() => handleDelete(task.id)}
+        onClick={() => promptDelete(task.id)}
         className="px-3 py-1.5 text-xs font-medium text-[#FF5232] bg-red-50 hover:bg-red-100 rounded-lg transition-all ml-auto"
     >
         Delete
@@ -242,7 +246,15 @@ function Dashboard() {
     onConfirm={handleLogout}
     onCancel={() => setShowLogoutModal(false)}
 />
+<ConfirmModal
+                isOpen={Boolean(taskToDelete)}
+                title="Delete Task"
+                message="Are you sure you want to delete this task? This action cannot be undone."
+                onConfirm={confirmDelete}
+                onCancel={() => setTaskToDelete(null)}
+            />
         </div>
+        
     );
 }
 

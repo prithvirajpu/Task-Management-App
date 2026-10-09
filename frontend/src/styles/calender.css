@@ -1,0 +1,96 @@
+.calendar-container .rbc-calendar {
+    color: #334155;
+    font-family: inherit;
+}
+
+.calendar-container .rbc-toolbar {
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.calendar-container .rbc-toolbar-label {
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.calendar-container .rbc-toolbar button {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 12px;
+    color: #475569;
+    background: #ffffff;
+}
+
+.calendar-container .rbc-toolbar button:hover {
+    background: #f1f5f9;
+}
+
+.calendar-container .rbc-toolbar button.rbc-active {
+    color: #ffffff;
+    background: #ff5232;
+    border-color: #ff5232;
+    box-shadow: none;
+}
+
+.calendar-container .rbc-header {
+    padding: 12px 4px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.calendar-container .rbc-month-view {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.calendar-container .rbc-day-bg {
+    border-left: 1px solid #e2e8f0;
+}
+
+.calendar-container .rbc-off-range-bg {
+    background: #f8fafc;
+}
+
+.calendar-container .rbc-today {
+    background: #fff7f5;
+}
+
+.calendar-container .rbc-date-cell {
+    padding: 6px;
+    font-size: 12px;
+}
+
+.calendar-container .rbc-event {
+    padding: 3px 5px;
+}
+
+.calendar-container .rbc-event:focus {
+    outline: 2px solid #ff5232;
+    outline-offset: 1px;
+}
+
+@media (max-width: 640px) {
+    .calendar-container .rbc-toolbar {
+        justify-content: center;
+    }
+
+    .calendar-container .rbc-toolbar-label {
+        flex-basis: 100%;
+        order: -1;
+        text-align: center;
+    }
+
+    .calendar-container .rbc-header {
+        font-size: 10px;
+    }
+
+    .calendar-container .rbc-date-cell {
+        padding: 3px;
+    }
+}
