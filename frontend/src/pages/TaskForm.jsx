@@ -30,6 +30,10 @@ function TaskForm() {
                 const response = await getTask(taskId);
 
                 const task = response.data;
+                if (!task){
+                    navigate('/dashboard',{replace:true})
+                    return
+                }
 
                 setTitle(task.title);
                 setDescription(task.description || "");
@@ -44,11 +48,12 @@ function TaskForm() {
                     error.response?.data?.message ||
                     "Failed to load task."
                 );
+                navigate("/dashboard", { replace: true });
             }
         };
 
         fetchTask();
-    }, [taskId, isEditMode]);
+    }, [taskId, isEditMode,navigate]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
