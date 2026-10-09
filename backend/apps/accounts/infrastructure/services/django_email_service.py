@@ -183,8 +183,10 @@ class DjangoEmailService(EmailService):
 
         resend.api_key = os.environ["RESEND_API_KEY"]
 
+        resend.api_key = os.environ["RESEND_API_KEY"]
+
         resend.Emails.send({
-            "from": "Task Management App <onboarding@resend.dev>",
+            "from": "Task Management App <noreply@send.prithvirajpu.online>",
             "to": [email],
             "subject": subject,
             "text": text_message,
