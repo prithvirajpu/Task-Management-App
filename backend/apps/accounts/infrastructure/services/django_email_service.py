@@ -1,5 +1,5 @@
-from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
+import os
+import resend
 
 from apps.accounts.domain.services.email_service import EmailService
 
@@ -181,16 +181,12 @@ class DjangoEmailService(EmailService):
         </html>
         """
 
-        email_message = EmailMultiAlternatives(
-            subject=subject,
-            body=text_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[email],
-        )
+        resend.api_key = os.environ["RESEND_API_KEY"]
 
-        email_message.attach_alternative(
-            html_message,
-            "text/html",
-        )
-
-        email_message.send()
+        resend.Emails.send({
+            "from": "Task Management App <onboarding@resend.dev>",
+            "to": [email],
+            "subject": subject,
+            "text": text_message,
+            "html": html_message,
+        })
