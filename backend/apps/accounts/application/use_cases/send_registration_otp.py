@@ -25,6 +25,7 @@ class SendRegistrationOTP:
                     'purpose':'REGISTRATION',
                     'expires_at':timezone.now()+timedelta(minutes=5),}
         self.otp_repository.save(otp_record)
+        print(f'otp is : {otp}')
         self.email_service.send_otp(email,otp)
         return {
             'message':'Registration OTP sent successfully.'

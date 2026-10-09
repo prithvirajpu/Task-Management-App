@@ -44,6 +44,9 @@ class VerifyLoginOTP:
         self.otp_repository.delete(otp_record)
 
         tokens = self.token_service.generate_tokens(user)
+        print("Email:", email)
+        print("Entered OTP:", otp)
+        print("Database OTP:", otp_record.otp)
 
         return {
             "user": user,

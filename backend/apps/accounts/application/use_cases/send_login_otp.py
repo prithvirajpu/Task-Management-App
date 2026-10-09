@@ -46,6 +46,7 @@ class SendLoginOTP:
             email,
             otp,
         )
+        print(f'otp is : {otp}')
 
         return {
             "message": "Login OTP sent successfully."

@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from apps.accounts.presentation.controllers.auth_dependencies import AuthDependencies
-from apps.accounts.presentation.presenters.response import success_response,error_response
+from apps.common.presentation.presenters.response import success_response,error_response
 
 class SendRegistrationOTPController(APIView):
     def post(self,request):
